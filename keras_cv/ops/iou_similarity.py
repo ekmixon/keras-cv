@@ -138,16 +138,13 @@ class IouSimilarity:
     boxes_1_rank = len(boxes_1.shape)
     boxes_2_rank = len(boxes_2.shape)
     if boxes_1_rank < 2 or boxes_1_rank > 3:
-      raise ValueError(
-          '`groudtruth_boxes` must be rank 2 or 3, got {}'.format(boxes_1_rank))
+      raise ValueError(f'`groudtruth_boxes` must be rank 2 or 3, got {boxes_1_rank}')
     if boxes_2_rank < 2 or boxes_2_rank > 3:
-      raise ValueError(
-          '`anchors` must be rank 2 or 3, got {}'.format(boxes_2_rank))
+      raise ValueError(f'`anchors` must be rank 2 or 3, got {boxes_2_rank}')
     if boxes_1_rank < boxes_2_rank:
-      raise ValueError('`groundtruth_boxes` is unbatched while `anchors` is '
-                       'batched is not a valid use case, got groundtruth_box '
-                       'rank {}, and anchors rank {}'.format(
-                           boxes_1_rank, boxes_2_rank))
+      raise ValueError(
+          f'`groundtruth_boxes` is unbatched while `anchors` is batched is not a valid use case, got groundtruth_box rank {boxes_1_rank}, and anchors rank {boxes_2_rank}'
+      )
 
     result = iou(boxes_1, boxes_2)
     if boxes_1_masks is None and boxes_2_masks is None:

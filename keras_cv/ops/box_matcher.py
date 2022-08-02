@@ -61,13 +61,13 @@ class BoxMatcher:
       ValueError: If `threshold` not sorted,
         or len(indicators) != len(threshold) + 1
     """
-    if not all([lo <= hi for (lo, hi) in zip(thresholds[:-1], thresholds[1:])]):
-      raise ValueError('`threshold` must be sorted, got {}'.format(thresholds))
+    if any(lo > hi for (lo, hi) in zip(thresholds[:-1], thresholds[1:])):
+      raise ValueError(f'`threshold` must be sorted, got {thresholds}')
     self.indicators = indicators
     if len(indicators) != len(thresholds) + 1:
-      raise ValueError('len(`indicators`) must be len(`thresholds`) + 1, got '
-                       'indicators {}, thresholds {}'.format(
-                           indicators, thresholds))
+      raise ValueError(
+          f'len(`indicators`) must be len(`thresholds`) + 1, got indicators {indicators}, thresholds {thresholds}'
+      )
     thresholds = thresholds[:]
     thresholds.insert(0, -float('inf'))
     thresholds.append(float('inf'))

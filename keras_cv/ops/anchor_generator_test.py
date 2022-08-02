@@ -120,8 +120,8 @@ class MultiScaleAnchorGeneratorTest(parameterized.TestCase, tf.test.TestCase):
                                expected_boxes):
     image_size = [64, 64]
     levels = range(min_level, max_level + 1)
-    anchor_sizes = dict((str(level), 2**(level + 1)) for level in levels)
-    strides = dict((str(level), 2**level) for level in levels)
+    anchor_sizes = {str(level): 2**(level + 1) for level in levels}
+    strides = {str(level): 2**level for level in levels}
     anchor_gen = anchor_generator.AnchorGenerator(
         anchor_sizes=anchor_sizes,
         scales=[1.],

@@ -155,12 +155,12 @@ class AnchorGenerator():
             anchor_sizes[k], scales[k], aspect_ratios[k], strides[k],
             clip_boxes)
     elif isinstance(anchor_sizes, (list, tuple)):
-      self.anchor_generators = []
-      for anchor_size, scale_list, ar_list, stride in zip(
-          anchor_sizes, scales, aspect_ratios, strides):
-        self.anchor_generators.append(
-            _SingleAnchorGenerator(anchor_size, scale_list, ar_list, stride,
-                                   clip_boxes))
+      self.anchor_generators = [
+          _SingleAnchorGenerator(anchor_size, scale_list, ar_list, stride,
+                                 clip_boxes)
+          for anchor_size, scale_list, ar_list, stride in zip(
+              anchor_sizes, scales, aspect_ratios, strides)
+      ]
 
   def __call__(self, image_size):
     anchor_generators = tf.nest.flatten(self.anchor_generators)
@@ -170,13 +170,13 @@ class AnchorGenerator():
 
 def maybe_map_structure_for_anchor(params, anchor_sizes):
   """broadcast the params to match anchor_sizes."""
-  if all(isinstance(param, (int, float)) for param in params):
-    if isinstance(anchor_sizes, (tuple, list)):
-      return [params] * len(anchor_sizes)
-    elif isinstance(anchor_sizes, dict):
-      return tf.nest.map_structure(lambda _: params, anchor_sizes)
-    else:
-      raise ValueError("the structure of `anchor_sizes` must be a tuple, "
-                       "list, or dict, given {}".format(anchor_sizes))
-  else:
+  if not all(isinstance(param, (int, float)) for param in params):
     return params
+  if isinstance(anchor_sizes, (tuple, list)):
+    return [params] * len(anchor_sizes)
+  elif isinstance(anchor_sizes, dict):
+    return tf.nest.map_structure(lambda _: params, anchor_sizes)
+  else:
+    raise ValueError(
+        f"the structure of `anchor_sizes` must be a tuple, list, or dict, given {anchor_sizes}"
+    )

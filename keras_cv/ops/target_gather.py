@@ -45,8 +45,9 @@ class TargetGather:
     elif len(labels.shape) == 3:
       return self._gather_batched(labels, match_indices, mask, mask_val)
     else:
-      raise ValueError("`TargetGather` does not support `labels` with rank "
-                       "larger than 3, got {}".format(len(labels.shape)))
+      raise ValueError(
+          f"`TargetGather` does not support `labels` with rank larger than 3, got {len(labels.shape)}"
+      )
 
   def _gather_unbatched(self, labels, match_indices, mask, mask_val):
     """Gather based on unbatched labels and boxes."""
@@ -64,10 +65,9 @@ class TargetGather:
       targets = tf.gather(labels, match_indices)
       if mask is None:
         return targets
-      else:
-        masked_targets = tf.cast(mask_val, labels.dtype) * tf.ones_like(
-            mask, dtype=labels.dtype)
-        return tf.where(mask, masked_targets, targets)
+      masked_targets = tf.cast(mask_val, labels.dtype) * tf.ones_like(
+          mask, dtype=labels.dtype)
+      return tf.where(mask, masked_targets, targets)
 
     return tf.cond(tf.greater(num_gt_boxes, 0),
                    _assign_when_rows_not_empty,
@@ -97,7 +97,6 @@ class TargetGather:
       targets = tf.gather_nd(labels, gather_nd_indices)
       if mask is None:
         return targets
-      else:
-        masked_targets = tf.cast(mask_val, labels.dtype) * tf.ones_like(
-            mask, dtype=labels.dtype)
-        return tf.where(mask, masked_targets, targets)
+      masked_targets = tf.cast(mask_val, labels.dtype) * tf.ones_like(
+          mask, dtype=labels.dtype)
+      return tf.where(mask, masked_targets, targets)

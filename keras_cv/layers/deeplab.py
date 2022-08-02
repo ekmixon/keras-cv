@@ -97,11 +97,7 @@ class SpatialPyramidPooling(tf.keras.layers.Layer):
     else:
       bn_op = tf.keras.layers.BatchNormalization
 
-    if tf.keras.backend.image_data_format() == 'channels_last':
-      bn_axis = -1
-    else:
-      bn_axis = 1
-
+    bn_axis = -1 if tf.keras.backend.image_data_format() == 'channels_last' else 1
     conv_sequential = tf.keras.Sequential([
         tf.keras.layers.Conv2D(
             filters=self.output_channels, kernel_size=(1, 1),
@@ -185,9 +181,10 @@ class SpatialPyramidPooling(tf.keras.layers.Layer):
   def call(self, inputs, training=None):
     if training is None:
       training = tf.keras.backend.learning_phase()
-    result = []
-    for layer in self.aspp_layers:
-      result.append(tf.cast(layer(inputs, training=training), inputs.dtype))
+    result = [
+        tf.cast(layer(inputs, training=training), inputs.dtype)
+        for layer in self.aspp_layers
+    ]
     result = tf.concat(result, axis=-1)
     result = self.projection(result, training=training)
     return result
